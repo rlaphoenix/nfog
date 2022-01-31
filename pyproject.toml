@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "nfog"
 version = "0.0.0"
-description = "Scriptable Database Driven NFO Generator for Movies and TV."
+description = "Scriptable Database-Driven NFO Generator for Movies and TV."
 license = "Apache-2.0"
 authors = ["PHOENiX <rlaphoenix@pm.me>"]
 readme = "README.md"
