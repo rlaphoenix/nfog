@@ -11,6 +11,8 @@ from langcodes import Language
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
+from nfog.constants import AUDIO_CHANNEL_LAYOUT_WEIGHT
+
 
 class Template:
     IMDB_ID_T = re.compile(r"^tt\d{7,8}$")
@@ -103,6 +105,16 @@ class Template:
         })
 
         return self._session
+
+    @staticmethod
+    def get_audio_channels(audio: Track) -> float:
+        """Get audio track's channels in channel layout float representation."""
+        if audio.channel_layout:
+            return float(sum(
+                AUDIO_CHANNEL_LAYOUT_WEIGHT.get(x, 1)
+                for x in audio.channel_layout.split(" ")
+            ))
+        return float(audio.channel_s)
 
     @staticmethod
     def get_track_title(track: Track) -> Optional[str]:
