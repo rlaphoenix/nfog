@@ -106,6 +106,60 @@ class Template:
 
         return self._session
 
+    def get_video_summary(self, video: Track) -> str:
+        """Get a video track's information in a two-line summary."""
+        line_1 = "- "
+        if video.language and video.language != "und":
+            line_1 += f"{Language.get(video.language).display_name(self.primary_lang)}, "
+
+        line_1 += f"{video.format} ({video.format_profile}) "
+        line_1 += f"{video.width}x{video.height} ({video.other_display_aspect_ratio[0]}) "
+        line_1 += f"@ {video.other_bit_rate[0]}"
+        if video.bit_rate_mode:
+            line_1 += f" ({video.bit_rate_mode})"
+
+        line_2 = "  "
+        if video.framerate_num:
+            line_2 += f"{video.framerate_num}/{video.framerate_den} FPS "
+        else:
+            line_2 += f"{video.frame_rate} FPS "
+        line_2 += f"({video.frame_rate_mode}), "
+        line_2 += f"{video.color_space} {video.chroma_subsampling} {video.bit_depth}bps, "
+        line_2 += f"{self.get_video_range(video)}, {video.scan_type or 'Progressive'}"
+
+        return "\n".join([line_1, line_2])
+
+    def get_audio_summary(self, audio: Track) -> str:
+        """Get an audio track's information in a one-line summary."""
+        line = "- "
+        if audio.language and audio.language != "und":
+            line += f"{Language.get(audio.language).display_name(self.primary_lang)}, "
+
+        title = self.get_track_title(audio)
+        if title:
+            line += f"{title}, "
+        line += f"{audio.format} {self.get_audio_channels(audio)} "
+        line += f"@ {audio.other_bit_rate[0]}"
+        if audio.bit_rate_mode:
+            line += f" ({audio.bit_rate_mode})"
+
+        return line
+
+    def get_subtitle_summary(self, subtitle: Track) -> str:
+        """Get a subtitle track's information in a one-line summary."""
+        line = "- "
+        if subtitle.language and subtitle.language != "und":
+            line += f"{Language.get(subtitle.language).display_name(self.primary_lang)}, "
+
+        title = self.get_track_title(subtitle)
+        if title:
+            line += f"{title}, "
+        line += {
+            "UTF-8": "SubRip (SRT)"
+        }.get(subtitle.format, subtitle.format)
+
+        return line
+
     @staticmethod
     def get_video_range(video: Track) -> str:
         """
