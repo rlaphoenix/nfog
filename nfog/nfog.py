@@ -29,7 +29,7 @@ def version() -> None:
     )
 
 
-@click.command(name="config")
+@cli.command(name="config")
 @click.argument("key", type=str, required=False)
 @click.argument("value", type=str, required=False)
 @click.option("--unset", is_flag=True, default=False, help="Unset/remove the configuration value.")
