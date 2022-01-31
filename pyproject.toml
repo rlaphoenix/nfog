@@ -29,6 +29,7 @@ appdirs = "^1.4.4"
 cinemagoer = "^2022.1.26"
 click = "^8.0.3"
 click-default-group = "^1.2.2"
+jsonpickle = "^2.1.0"
 langcodes = {version = "^3.3.0", extras = ["data"]}
 pymediainfo = "^5.1.0"
 requests = "^2.27.1"
