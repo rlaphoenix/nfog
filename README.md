@@ -7,6 +7,10 @@
 
 Scriptable Database-Driven NFO Generator for Movies and TV.
 
+## Installation
+
+    pip install --user nfog
+
 ## Building
 
 ### Dependencies
