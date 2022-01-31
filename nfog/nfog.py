@@ -41,7 +41,11 @@ def version() -> None:
     print(
         f"nfog {__version__}\n"
         f"Scriptable Database-Driven NFO Generator for Movies and TV.\n"
-        "https://github.com/rlaphoenix/nfog"
+        "https://github.com/rlaphoenix/nfog\n"
+        "\n"
+        f"Configuration File: {Files.config}\n"
+        f"Templates Folder: {Directories.templates}\n"
+        f"Artwork Folder: {Directories.artwork}"
     )
 
 
