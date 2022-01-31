@@ -7,6 +7,21 @@
 
 Scriptable Database Driven NFO Generator for Movies and TV.
 
+## Building
+
+### Dependencies
+
+- [Python](https://python.org/downloads) (v3.7 or newer)
+- [Poetry](https://python-poetry.org/docs) (latest recommended)
+
+### Installation
+
+1. `git clone https://github.com/rlaphoenix/nfog`
+2. `cd nfog`
+3. `poetry config virtualenvs.in-project true` (optional, but recommended)
+4. `poetry install`
+5. `nfo -h`
+
 ## License
 
 [Apache License, Version 2.0](LICENSE)
