@@ -161,6 +161,16 @@ class Template:
         return line
 
     @staticmethod
+    def get_chapter_list(chapters: Optional[dict[str, str]]) -> list[str]:
+        """Get a list of chapters showing timecode and chapter name."""
+        if not chapters:
+            return []
+        return [
+            f"- {k}: {v}"
+            for k, v in chapters.items()
+        ]
+
+    @staticmethod
     def get_video_range(video: Track) -> str:
         """
         Get video range as typical shortname.
