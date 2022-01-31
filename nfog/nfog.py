@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 import click
 import toml
+from click_default_group import DefaultGroup
 from pymediainfo import MediaInfo
 
 from nfog import __version__
@@ -16,7 +17,12 @@ from nfog.templates import Template
 from nfog.templates.Group import TemplateGroup
 
 
-@click.group(context_settings=GROUP_SETTINGS)
+@click.group(
+    cls=DefaultGroup,
+    default="generate",
+    default_if_no_args=True,
+    context_settings=GROUP_SETTINGS
+)
 def cli() -> None:
     """
     \b
