@@ -4,7 +4,7 @@ import re
 import textwrap
 from abc import abstractmethod
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, Optional
 
 from imdb import IMDb
 from langcodes import Language
