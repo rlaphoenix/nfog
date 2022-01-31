@@ -251,5 +251,35 @@ class Template:
             for x in textwrap.wrap(text, wrap_width or width)
         ])
 
+    @staticmethod
+    def layout(items: list[str], width: int, spacing: int = 0) -> str:
+        """
+        Lay out data in a grid with specific widths and spacing.
+
+        Example:
+            >>> Template.layout(['1', '2', '3'], width=2)
+            12
+            3
+            >>> Template.layout(['1', '2', '3', '4', '5', '6', '7'], width=4)
+            1234
+            567
+            >>> Template.layout(['1', '2', '3', '4'], width=2, spacing=1)
+            1 2
+
+            3 4
+        """
+        if not items:
+            return ""
+
+        grid = [
+            items[i:i + width]
+            for i in range(0, len(items), width)
+        ]
+
+        grid_x_spaced = [(" " * spacing).join(x) for x in grid]
+        grid_y_spaced = ("\n" * (spacing + 1)).join(grid_x_spaced)
+
+        return grid_y_spaced
+
 
 __ALL__ = (Template,)
