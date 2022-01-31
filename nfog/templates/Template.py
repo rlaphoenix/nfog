@@ -11,7 +11,7 @@ from langcodes import Language
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
-from nfog.constants import AUDIO_CHANNEL_LAYOUT_WEIGHT
+from nfog.constants import AUDIO_CHANNEL_LAYOUT_WEIGHT, DYNAMIC_RANGE_MAP
 
 
 class Template:
@@ -105,6 +105,22 @@ class Template:
         })
 
         return self._session
+
+    @staticmethod
+    def get_video_range(video: Track) -> str:
+        """
+        Get video range as typical shortname.
+        Returns multiple ranges in space-separated format if a fallback range is
+        available. E.g., 'DV HDR10'.
+        """
+        if video.hdr_format:
+            return " ".join([
+                DYNAMIC_RANGE_MAP.get(x)
+                for x in video.hdr_format.split(" / ")
+            ])
+        elif "HLG" in ((video.transfer_characteristics or ""), (video.transfer_characteristics_original or "")):
+            return "HLG"
+        return "SDR"
 
     @staticmethod
     def get_audio_channels(audio: Track) -> float:
