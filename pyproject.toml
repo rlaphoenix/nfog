@@ -25,6 +25,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
+appdirs = "^1.4.4"
 click = "^8.0.3"
 click-default-group = "^1.2.2"
 
