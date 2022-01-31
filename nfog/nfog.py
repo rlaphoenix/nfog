@@ -95,7 +95,7 @@ def generator(
     **__
 ) -> None:
     if artwork:
-        fn = Directories.artwork / f"{artwork}.py"
+        fn = Files.artwork(artwork)
         if not fn.exists():
             raise click.ClickException(f"Artwork ({fn}) does not exist.")
         scope: dict[str, Any] = {}
