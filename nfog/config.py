@@ -12,7 +12,8 @@ class Directories:
 
 class Files:
     config = Directories.user_data / "config.toml"
-    template = Directories.templates / "{name}.nfo"
+    template = lambda name: Directories.templates / f"{name}.py"  # noqa: E731
+    artwork = lambda name: Directories.artwork / f"{name}.py"  # noqa: E731
 
 
 if Files.config.exists():
