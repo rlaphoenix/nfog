@@ -1,0 +1,46 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "nfog"
+version = "0.0.0"
+description = "Scriptable Database Driven NFO Generator for Movies and TV."
+license = "Apache-2.0"
+authors = ["PHOENiX <rlaphoenix@pm.me>"]
+readme = "README.md"
+homepage = "https://github.com/rlaphoenix/nfog"
+repository = "https://github.com/rlaphoenix/nfog"
+keywords = ["python", "nfo", "generator", "scriptable", "imdb"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Documentation",
+    "Topic :: Multimedia",
+    "Topic :: Multimedia :: Video",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<4.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+isort = "^5.9.3"
+mypy = "^0.910"
+pre-commit = "^2.17.0"
+
+[tool.poetry.scripts]
+nfo = "nfog.cli:cli"
+
+[tool.isort]
+line_length = 118
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+no_implicit_optional = true
