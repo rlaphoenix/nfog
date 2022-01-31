@@ -116,3 +116,8 @@ class Movie(Template):
     def release_name(self) -> str:
         """The release name used for the output NFO filename."""
         return self.file.stem
+
+    @property
+    def file_ext(self) -> str:
+        """The file extension to use when saving this template."""
+        return ".nfo"

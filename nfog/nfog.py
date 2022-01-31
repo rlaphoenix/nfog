@@ -107,7 +107,7 @@ def generator(
     else:
         nfo = template.nfo
 
-    out_path: Path = file.parent / f"{template.release_name}.nfo"
+    out_path: Path = file.parent / f"{template.release_name}{template.file_ext}"
     out_path.write_text(nfo, encoding=encoding)
     print(f"Generated NFO for {template.release_name}")
     print(f" + Saved to: {out_path}")

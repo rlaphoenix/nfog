@@ -93,6 +93,11 @@ class Template:
         """The release name used for the output NFO filename."""
 
     @property
+    @abstractmethod
+    def file_ext(self) -> str:
+        """The file extension to use when saving this template."""
+
+    @property
     def session(self) -> Session:
         """Get a Request Session."""
         if self._session is not None:
