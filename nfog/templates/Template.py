@@ -5,6 +5,7 @@ import textwrap
 from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 from imdb import IMDb
 from langcodes import Language, closest_supported_match
@@ -111,6 +112,33 @@ class Template:
         })
 
         return self._session
+
+    def get_preview_images(self, url: str) -> list[tuple[str, str]]:
+        """Get a list of image thumbnail SRCs and full hyperlinks from Gallery url."""
+        if not url:
+            raise ValueError("Provided URL cannot be empty.")
+
+        domain = ".".join(urlparse(url).netloc.split(".")[-2:])
+        supported_domains = ["imgbox.com", "beyondhd.co"]
+        if domain not in supported_domains:
+            return []
+
+        images = []
+        page = self.session.get(url).text
+        if domain == "imgbox.com":
+            for m in re.finditer(r'src="(https://thumbs2.imgbox.com.+/)(\w+)_b.([^"]+)', page):
+                images.append((
+                    f"https://imgbox.com/{m.group(2)}",
+                    f"{m.group(1)}{m.group(2)}_t.{m.group(3)}"
+                ))
+        if domain == "beyondhd.co":
+            for m in re.finditer(r'/image/([^"]+)"\D+src="(https://.*beyondhd.co/images.+/(\w+).md.[^"]+)', page):
+                images.append((
+                    f"https://beyondhd.co/image/{m.group(1)}",
+                    m.group(2)
+                ))
+
+        return images
 
     def get_banner_image(self, tvdb_id: int, language: str) -> Optional[str]:
         """Get a wide banner image from fanart.tv."""
