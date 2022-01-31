@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional, Any
 
 from imdb import IMDb
+from langcodes import Language
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
@@ -102,6 +103,23 @@ class Template:
         })
 
         return self._session
+
+    @staticmethod
+    def get_track_title(track: Track) -> Optional[str]:
+        """
+        Get track title in it's simplest form.
+        Returns None if the title is just stating the Language/Codec.
+        """
+        if not track.title or any(str(x) in track.title.lower() for x in (
+            Language.get(track.language).display_name().lower(),  # Language Display Name (e.g. Spanish)
+            track.language.lower(),  # Language Code (e.g. und, or es)
+            track.format.lower(),  # Codec (e.g. E-AC-3)
+            track.format.replace("-", "").lower(),  # Alphanumeric Codec (e.g. EAC3)
+            "stereo",
+            "surround"
+        )):
+            return None
+        return track.title
 
     @staticmethod
     def indented_wrap(text: str, width: int, indent: Optional[str] = None, **kwargs) -> str:
