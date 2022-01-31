@@ -69,9 +69,12 @@ class Season(Template):
             ""
         ])
 
-        for video in self.video_tracks:
-            for line in self.get_video_summary(video).splitlines(keepends=False):
-                self._nfo.append(self.indented_wrap(line, 66, "  "))
+        if self.video_tracks:
+            for video in self.video_tracks:
+                for line in self.get_video_summary(video).splitlines(keepends=False):
+                    self._nfo.append(self.indented_wrap(line, 66, "  "))
+        else:
+            self._nfo.append("  --")
 
         self._nfo.extend([
             "",
@@ -79,8 +82,11 @@ class Season(Template):
             ""
         ])
 
-        for audio in self.audio_tracks:
-            self._nfo.append(self.indented_wrap(self.get_audio_summary(audio), 66, "  "))
+        if self.audio_tracks:
+            for audio in self.audio_tracks:
+                self._nfo.append(self.indented_wrap(self.get_audio_summary(audio), 66, "  "))
+        else:
+            self._nfo.append("  --")
 
         self._nfo.extend([
             "",
@@ -88,8 +94,11 @@ class Season(Template):
             ""
         ])
 
-        for text in self.text_tracks:
-            self._nfo.append(self.indented_wrap(self.get_subtitle_summary(text), 66, "  "))
+        if self.text_tracks:
+            for text in self.text_tracks:
+                self._nfo.append(self.indented_wrap(self.get_subtitle_summary(text), 66, "  "))
+        else:
+            self._nfo.append("  --")
 
         self._nfo = "\n".join(self._nfo)
         return self._nfo
