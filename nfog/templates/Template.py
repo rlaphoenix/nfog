@@ -7,10 +7,11 @@ from pathlib import Path
 from typing import Any, Optional
 
 from imdb import IMDb
-from langcodes import Language
+from langcodes import Language, closest_supported_match
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
+from nfog.config import config
 from nfog.constants import AUDIO_CHANNEL_LAYOUT_WEIGHT, DYNAMIC_RANGE_MAP
 
 
@@ -110,6 +111,34 @@ class Template:
         })
 
         return self._session
+
+    def get_banner_image(self, tvdb_id: int, language: str) -> Optional[str]:
+        """Get a wide banner image from fanart.tv."""
+        if not tvdb_id:
+            return None
+
+        api_key = config.get("fanart_api_key")
+        if not api_key:
+            raise ValueError("No Fanart.tv api key is set in config, cannot get banner image.")
+
+        r = self.session.get(f"http://webservice.fanart.tv/v3/tv/{tvdb_id}?api_key={api_key}")
+        if r.status_code == 404:
+            return None
+        res = r.json()
+
+        error = res.get("error message")
+        if error:
+            if error == "Not found":
+                return None
+            raise ValueError(f"An unexpected error occurred while calling Fanart.tv, {res}")
+
+        url = next((
+            x["url"]
+            for x in res.get("tvbanner") or []
+            if closest_supported_match(x["lang"], [language], 5)
+        ), None)
+
+        return url
 
     def get_video_summary(self, video: Track) -> str:
         """Get a video track's information in a two-line summary."""
