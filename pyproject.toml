@@ -26,8 +26,12 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
 appdirs = "^1.4.4"
+cinemagoer = "^2022.1.26"
 click = "^8.0.3"
 click-default-group = "^1.2.2"
+langcodes = {version = "^3.3.0", extras = ["data"]}
+pymediainfo = "^5.1.0"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
