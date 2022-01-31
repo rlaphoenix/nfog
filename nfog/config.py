@@ -5,7 +5,7 @@ from appdirs import user_data_dir
 
 
 class Directories:
-    user_data = Path(user_data_dir("pynfogen", False))
+    user_data = Path(user_data_dir("nfog", False))
 
 
 class Files:
