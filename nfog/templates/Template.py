@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import textwrap
 from abc import abstractmethod
 from pathlib import Path
 from typing import Optional, Any
@@ -101,6 +102,39 @@ class Template:
         })
 
         return self._session
+
+    @staticmethod
+    def indented_wrap(text: str, width: int, indent: Optional[str] = None, **kwargs) -> str:
+        """
+        Wrap text at a specific width and indent.
+        The `indent` value will set an initial and subsequent indent. If
+        set, it will override any indent options you may have also provided via kwargs.
+        """
+        if not text:
+            return text
+        if not width or width < 1:
+            raise ValueError(f"An invalid width value of [{width}] was provided.")
+        if indent:
+            kwargs["initial_indent"] = indent
+            kwargs["subsequent_indent"] = indent
+        return "\n".join(textwrap.wrap(text, width, **kwargs))
+
+    @staticmethod
+    def centered_wrap(text: str, width: int, wrap_width: Optional[int] = None) -> str:
+        """
+        Center text to a specific width, while also wrapping at another width.
+        If wrap_width is not provided, width will be used instead.
+        """
+        if not text:
+            return text
+        if not width or width < 1:
+            raise ValueError(f"An invalid width value of [{width}] was provided.")
+        if wrap_width and wrap_width < width:
+            raise ValueError(f"Wrap width [{wrap_width}] cannot be less than centering width [{width}].")
+        return "\n".join([
+            x.center(width)
+            for x in textwrap.wrap(text, wrap_width or width)
+        ])
 
 
 __ALL__ = (Template,)
