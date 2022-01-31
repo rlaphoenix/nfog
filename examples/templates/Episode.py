@@ -8,6 +8,16 @@ from nfog.templates import Template
 
 
 class Episode(Template):
+    """
+    Template for single TV Episode files.
+    The release name will be the provided file's name.
+
+    Note:
+    - This uses IMDb for Title information which might not match TMDB or TVDB.
+    - IMDb commonly has multi-segment episodes as one episode, e.g. S01E01E02 as just
+      one episode, unlike what is typically done on TMDB and TVDB.
+    """
+
     @staticmethod
     @click.command(name="Episode")
     @click.argument("season", type=int)

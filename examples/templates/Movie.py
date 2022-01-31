@@ -8,6 +8,14 @@ from nfog.templates import Template
 
 
 class Movie(Template):
+    """
+    Template for Movies.
+    The release name will be the provided file's name.
+
+    Note:
+    - This uses IMDb for Title information which might not match TMDB.
+    """
+
     @staticmethod
     @click.command(name="Movie")
     @click.pass_context

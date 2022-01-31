@@ -8,6 +8,17 @@ from nfog.templates import Template
 
 
 class Season(Template):
+    """
+    Template for full-Season packs.
+    The release name will be the parent folder name of the provided file.
+
+    Note:
+    - This uses IMDb for Title information which might not match packs organized
+      specifically for TMDB or TVDB.
+    - IMDb commonly has multi-segment episodes as one episode, e.g. S01E01E02 as just
+      one episode, unlike what is typically done on TMDB and TVDB.
+    """
+
     @staticmethod
     @click.command(name="Season")
     @click.argument("season", type=int)
