@@ -21,7 +21,7 @@ class Season(Template):
         if self._nfo:
             return self._nfo
 
-        season = self.args["season"]
+        season: int = self.args["season"]
 
         title = self.imdb["title"]
         type_ = self.imdb["kind"].title().replace("Tv", "TV")
