@@ -8,12 +8,12 @@ from typing import Any, Optional
 from urllib.parse import urlparse
 
 from imdb import IMDb
-from langcodes import Language, LanguageTagError, closest_supported_match
+from langcodes import closest_supported_match
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
 from nfog.config import config
-from nfog.constants import AUDIO_CHANNEL_LAYOUT_WEIGHT, DYNAMIC_RANGE_MAP
+from nfog.tracks import Audio, Subtitle, Video
 
 
 class Template:
@@ -60,9 +60,9 @@ class Template:
         self.args = kwargs
 
         self.media_info = MediaInfo.parse(self.file)
-        self.video_tracks = self.media_info.video_tracks
-        self.audio_tracks = self.media_info.audio_tracks
-        self.text_tracks = self.media_info.text_tracks
+        self.video_tracks = [Video(x, self.file) for x in self.media_info.video_tracks]
+        self.audio_tracks = [Audio(x, self.file) for x in self.media_info.audio_tracks]
+        self.text_tracks = [Subtitle(x, self.file) for x in self.media_info.text_tracks]
 
         self.chapters: Optional[Track] = next(iter(self.media_info.menu_tracks), None)
         if self.chapters:
@@ -168,57 +168,49 @@ class Template:
 
         return url
 
-    def get_video_summary(self, video: Track) -> str:
+    def get_video_summary(self, video: Video) -> str:
         """Get a video track's information in a two-line summary."""
         line_1 = "- "
-        if video.language and video.language != "und":
-            line_1 += f"{Language.get(video.language).display_name(self.primary_lang)}, "
+        if video.language:
+            line_1 += f"{video.language.display_name(self.primary_lang)}, "
 
-        line_1 += f"{video.format} ({video.format_profile}) "
-        line_1 += f"{video.width}x{video.height} ({video.other_display_aspect_ratio[0]}) "
-        line_1 += f"@ {video.other_bit_rate[0]}"
+        line_1 += f"{video.codec} ({video.profile}) "
+        line_1 += f"{video.width}x{video.height} ({video.dar}) "
+        line_1 += f"@ {video.bitrate}"
         if video.bit_rate_mode:
             line_1 += f" ({video.bit_rate_mode})"
 
-        line_2 = "  "
-        if video.framerate_num:
-            line_2 += f"{video.framerate_num}/{video.framerate_den} FPS "
-        else:
-            line_2 += f"{video.frame_rate} FPS "
+        line_2 = f"  {video.fps} FPS "
         line_2 += f"({video.frame_rate_mode}), "
         line_2 += f"{video.color_space} {video.chroma_subsampling} {video.bit_depth}bps, "
-        line_2 += f"{self.get_video_range(video)}, {video.scan_type or 'Progressive'}"
+        line_2 += f"{video.range}, {video.scan}"
 
         return "\n".join([line_1, line_2])
 
-    def get_audio_summary(self, audio: Track) -> str:
+    def get_audio_summary(self, audio: Audio) -> str:
         """Get an audio track's information in a one-line summary."""
         line = "- "
-        if audio.language and audio.language != "und":
-            line += f"{Language.get(audio.language).display_name(self.primary_lang)}, "
+        if audio.language:
+            line += f"{audio.language.display_name(self.primary_lang)}, "
 
-        title = self.get_track_title(audio)
-        if title:
-            line += f"{title}, "
-        line += f"{audio.format} {self.get_audio_channels(audio)} "
-        line += f"@ {audio.other_bit_rate[0]}"
+        if audio.title:
+            line += f"{audio.title}, "
+        line += f"{audio.codec} {audio.channels} "
+        line += f"@ {audio.bitrate}"
         if audio.bit_rate_mode:
             line += f" ({audio.bit_rate_mode})"
 
         return line
 
-    def get_subtitle_summary(self, subtitle: Track) -> str:
+    def get_subtitle_summary(self, subtitle: Subtitle) -> str:
         """Get a subtitle track's information in a one-line summary."""
         line = "- "
-        if subtitle.language and subtitle.language != "und":
-            line += f"{Language.get(subtitle.language).display_name(self.primary_lang)}, "
+        if subtitle.language:
+            line += f"{subtitle.language.display_name(self.primary_lang)}, "
 
-        title = self.get_track_title(subtitle)
-        if title:
-            line += f"{title}, "
-        line += {
-            "UTF-8": "SubRip (SRT)"
-        }.get(subtitle.format, subtitle.format)
+        if subtitle.title:
+            line += f"{subtitle.title}, "
+        line += subtitle.codec
 
         return line
 
@@ -231,93 +223,6 @@ class Template:
             f"- {k}: {v}"
             for k, v in chapters.items()
         ]
-
-    @staticmethod
-    def get_video_range(video: Track) -> str:
-        """
-        Get video range as typical shortname.
-        Returns multiple ranges in space-separated format if a fallback range is
-        available. E.g., 'DV HDR10'.
-        """
-        if video.hdr_format:
-            return " ".join([
-                DYNAMIC_RANGE_MAP.get(x)
-                for x in video.hdr_format.split(" / ")
-            ])
-        elif "HLG" in ((video.transfer_characteristics or ""), (video.transfer_characteristics_original or "")):
-            return "HLG"
-        return "SDR"
-
-    @staticmethod
-    def get_audio_channels(audio: Track) -> float:
-        """Get audio track's channels in channel layout float representation."""
-        if audio.channel_layout:
-            return float(sum(
-                AUDIO_CHANNEL_LAYOUT_WEIGHT.get(x, 1)
-                for x in audio.channel_layout.split(" ")
-            ))
-        return float(audio.channel_s)
-
-    @staticmethod
-    def get_track_title(track: Track) -> Optional[str]:
-        """
-        Get track title in it's simplest form.
-
-        Returns None if title contains the Language, Codec, or Encoding Library.
-        The track title should only be used for extra flag information, or as an
-        actual track name.
-
-        Examples:
-
-        | Language | Track Title                   | Output                        |
-        | -------- | ----------------------------- | ----------------------------- |
-        | es       |                               |                               |
-        | es       | Spanish                       |                               |
-        | es       | Spanish (Latin American, SDH) |                               | ! info loss
-        | es       |  (Latin American, SDH)        | (Latin American, SDH)         |
-        | es       | Latin American (SDH)          | Latin American (SDH)          |
-        | es       | Commentary by John & Jane Doe | Commentary by John & Jane Doe |
-        | es       | AC-3                          |                               |
-        | es       | DD                            |                               |
-        | es       | AC3 2.0                       |                               |
-        | es       | 2.0                           | 2.0 (too probable to happen)  |
-        | es       | Stereo                        |                               |
-        | es       | H.264                         |                               |
-        | es       | H264                          |                               |
-        | es       | x264                          |                               |
-        """
-        title = (track.title or "").strip()
-        if not title:
-            return None
-
-        try:
-            if Language.find(title) != Language.get("und"):
-                return None
-        except LookupError:
-            pass
-
-        try:
-            if Language.get(title) != Language.get("und"):
-                return None
-        except LanguageTagError:
-            pass
-
-        if any(str(x).lower() in title.lower() for x in (
-            # Codec (e.g. E-AC-3, EAC3, H.264, H264, VC-1, VC1)
-            track.format,
-            re.sub(r"[\W_]+", "", track.format),
-            # Encoding library (if available)
-            (track.writing_library or "").split(" ")[0],
-            # Channel layout as generic name
-            # Float representation not checked as too probable
-            "Mono",
-            "Stereo",
-            "Surround",
-            "Atmos"
-        ) if x):
-            return None
-
-        return title
 
     @staticmethod
     def indented_wrap(text: str, width: int, indent: Optional[str] = None, **kwargs) -> str:
