@@ -42,7 +42,7 @@ class Movie(Template):
         ])
 
         if self.tmdb:
-            self._nfo.append(f"  TMDB     : https://themoviedb.org/{self.tmdb}")
+            self._nfo.append(f"  TMDB     : https://themoviedb.org/movie/{self.tmdb.id}")
 
         self._nfo.extend([
             f"  Preview  : {self.preview}",

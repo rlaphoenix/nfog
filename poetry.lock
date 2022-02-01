@@ -420,6 +420,17 @@ pymysql = ["pymysql (<1)", "pymysql"]
 sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
+name = "tmdbsimple"
+version = "2.9.1"
+description = "A Python wrapper for The Movie Database API v3"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -490,7 +501,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "73dad15ac0c381c1a6962a7dc57462d2ee118c15d3e927783590e15d4713956a"
+content-hash = "88a70c2c7c10913768db7a791dc96a91b25d72b8f19167ec736e7dddfd37693e"
 
 [metadata.files]
 appdirs = [
@@ -864,6 +875,10 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.31-cp39-cp39-win32.whl", hash = "sha256:289465162b1fa1e7a982f8abe59d26a8331211cad4942e8031d2b7db1f75e649"},
     {file = "SQLAlchemy-1.4.31-cp39-cp39-win_amd64.whl", hash = "sha256:9e4fb2895b83993831ba2401b6404de953fdbfa9d7d4fa6a4756294a83bbc94f"},
     {file = "SQLAlchemy-1.4.31.tar.gz", hash = "sha256:582b59d1e5780a447aada22b461e50b404a9dc05768da1d87368ad8190468418"},
+]
+tmdbsimple = [
+    {file = "tmdbsimple-2.9.1-py3-none-any.whl", hash = "sha256:b52387c667bad1dccf5f776a576a971622a111fc08b7f731e360fabcc9860616"},
+    {file = "tmdbsimple-2.9.1.tar.gz", hash = "sha256:636eaaaec82027929e8a91c2166e01f552ec63f869bf1fcd65aa561b705c7464"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

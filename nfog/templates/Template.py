@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urlparse
 
+import tmdbsimple
 from imdb import IMDb
 from langcodes import closest_supported_match
 from pymediainfo import MediaInfo, Track
@@ -42,18 +43,31 @@ class Template:
             raise ValueError(
                 f"The provided IMDb ID ({imdb}) is not valid. Expected e.g., 'tt0487831', 'tt10810424'."
             )
-        if tmdb and not self.TMDB_ID_T.match(tmdb):
-            raise ValueError(
-                f"The provided TMDB ID ({tmdb}) is not valid. Expected e.g., 'tv/2490', 'movie/14836'."
-            )
-        if tvdb and not self.TVDB_ID_T.match(str(tvdb)):
-            raise ValueError(
-                f"The provided TVDB ID ({tvdb}) is not valid. Expected e.g., '79216', '1395'."
-            )
-
         self.imdb = IMDb().get_movie(imdb.lstrip("tt"), ("main", "episodes"))
-        self.tmdb = tmdb
-        self.tvdb = tvdb
+
+        if tmdb:
+            if not self.TMDB_ID_T.match(tmdb):
+                raise ValueError(
+                    f"The provided TMDB ID ({tmdb}) is not valid. Expected e.g., 'tv/2490', 'movie/14836'."
+                )
+            if not tmdbsimple.API_KEY:
+                raise EnvironmentError("No themoviedb.org api key in config, cannot proceed.")
+            self.tmdb = {
+                "movie": tmdbsimple.Movies,
+                "tv": tmdbsimple.TV
+            }[tmdb.split("/")[0]](tmdb.split("/")[1])
+        else:
+            self.tmdb = None
+
+        if tvdb:
+            if not self.TVDB_ID_T.match(str(tvdb)):
+                raise ValueError(
+                    f"The provided TVDB ID ({tvdb}) is not valid. Expected e.g., '79216', '1395'."
+                )
+            self.tvdb = tvdb
+        else:
+            self.tvdb = None
+
         self.source = source
         self.note = note
         self.preview = preview

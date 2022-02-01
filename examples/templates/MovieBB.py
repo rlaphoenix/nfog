@@ -70,7 +70,7 @@ class MovieBB(Template):
         ])
 
         if self.tmdb:
-            self._nfo.append(f"TMDB: https://themoviedb.org/{self.tmdb}")
+            self._nfo.append(f"TMDB: https://themoviedb.org/movie/{self.tmdb.id}")
 
         if self.tvdb:
             self._nfo.append(f"TVDB: https://thetvdb.com/?tab=series&id={self.tvdb}")
