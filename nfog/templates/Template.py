@@ -8,7 +8,7 @@ from typing import Any, Optional
 from urllib.parse import urlparse
 
 from imdb import IMDb
-from langcodes import Language, closest_supported_match
+from langcodes import Language, LanguageTagError, closest_supported_match
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
@@ -262,18 +262,62 @@ class Template:
     def get_track_title(track: Track) -> Optional[str]:
         """
         Get track title in it's simplest form.
-        Returns None if the title is just stating the Language/Codec.
+
+        Returns None if title contains the Language, Codec, or Encoding Library.
+        The track title should only be used for extra flag information, or as an
+        actual track name.
+
+        Examples:
+
+        | Language | Track Title                   | Output                        |
+        | -------- | ----------------------------- | ----------------------------- |
+        | es       |                               |                               |
+        | es       | Spanish                       |                               |
+        | es       | Spanish (Latin American, SDH) |                               | ! info loss
+        | es       |  (Latin American, SDH)        | (Latin American, SDH)         |
+        | es       | Latin American (SDH)          | Latin American (SDH)          |
+        | es       | Commentary by John & Jane Doe | Commentary by John & Jane Doe |
+        | es       | AC-3                          |                               |
+        | es       | DD                            |                               |
+        | es       | AC3 2.0                       |                               |
+        | es       | 2.0                           | 2.0 (too probable to happen)  |
+        | es       | Stereo                        |                               |
+        | es       | H.264                         |                               |
+        | es       | H264                          |                               |
+        | es       | x264                          |                               |
         """
-        if not track.title or any(str(x) in track.title.lower() for x in (
-            Language.get(track.language).display_name().lower(),  # Language Display Name (e.g. Spanish)
-            track.language.lower(),  # Language Code (e.g. und, or es)
-            track.format.lower(),  # Codec (e.g. E-AC-3)
-            track.format.replace("-", "").lower(),  # Alphanumeric Codec (e.g. EAC3)
-            "stereo",
-            "surround"
-        )):
+        title = (track.title or "").strip()
+        if not title:
             return None
-        return track.title
+
+        try:
+            if Language.find(title) != Language.get("und"):
+                return None
+        except LookupError:
+            pass
+
+        try:
+            if Language.get(title) != Language.get("und"):
+                return None
+        except LanguageTagError:
+            pass
+
+        if any(str(x).lower() in title.lower() for x in (
+            # Codec (e.g. E-AC-3, EAC3, H.264, H264, VC-1, VC1)
+            track.format,
+            re.sub(r"[\W_]+", "", track.format),
+            # Encoding library (if available)
+            (track.writing_library or "").split(" ")[0],
+            # Channel layout as generic name
+            # Float representation not checked as too probable
+            "Mono",
+            "Stereo",
+            "Surround",
+            "Atmos"
+        ) if x):
+            return None
+
+        return title
 
     @staticmethod
     def indented_wrap(text: str, width: int, indent: Optional[str] = None, **kwargs) -> str:
