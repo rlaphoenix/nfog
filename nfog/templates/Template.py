@@ -25,7 +25,7 @@ class Template:
     def __init__(
         self,
         file: Path,
-        imdb: str,
+        imdb: Optional[str],
         tmdb: Optional[str] = None,
         tvdb: Optional[int] = None,
         source: Optional[str] = None,
@@ -37,13 +37,14 @@ class Template:
 
         self.file = file
 
-        if not imdb:
-            raise ValueError("An IMDb ID is required, but was not provided.")
-        if not self.IMDB_ID_T.match(imdb):
-            raise ValueError(
-                f"The provided IMDb ID ({imdb}) is not valid. Expected e.g., 'tt0487831', 'tt10810424'."
-            )
-        self.imdb = IMDb().get_movie(imdb.lstrip("tt"), ("main", "episodes"))
+        if imdb:
+            if not self.IMDB_ID_T.match(imdb):
+                raise ValueError(
+                    f"The provided IMDb ID ({imdb}) is not valid. Expected e.g., 'tt0487831', 'tt10810424'."
+                )
+            self.imdb = IMDb().get_movie(imdb.lstrip("tt"), ("main", "episodes"))
+        else:
+            self.imdb = None
 
         if tmdb:
             if not self.TMDB_ID_T.match(tmdb):
@@ -64,6 +65,7 @@ class Template:
                 raise ValueError(
                     f"The provided TVDB ID ({tvdb}) is not valid. Expected e.g., '79216', '1395'."
                 )
+            # tvdb api isn't free, harder to implement
             self.tvdb = tvdb
         else:
             self.tvdb = None
@@ -93,7 +95,7 @@ class Template:
                 if lang.language
             ),
             # default to first language on IMDb
-            self.imdb["language codes"][0]
+            self.imdb["language codes"][0] if self.imdb else None
         )
 
         self._session = None

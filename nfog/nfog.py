@@ -51,7 +51,7 @@ def version() -> None:
 
 @cli.group(cls=TemplateGroup, context_settings=dict(**GROUP_SETTINGS, ignore_unknown_options=True))
 @click.argument("file", type=Path)
-@click.argument("imdb", type=str)
+@click.option("-imdb", type=str, default=None, help="IMDb ID (including 'tt').")
 @click.option("-tmdb", type=str, default=None, help="TMDB ID (including 'tv/' or 'movie/').")
 @click.option("-tvdb", type=int, default=None, help="TVDB ID ('73244' not 'the-office-us').")
 @click.option("-a", "--artwork", type=str, default=None, help="Artwork to use.")
@@ -60,7 +60,9 @@ def version() -> None:
 @click.option("-p", "--preview", type=str, default=None, help="Preview information, typically an URL.")
 @click.option("-e", "--encoding", type=str, default="utf8", help="Text-encoding for output, input is always UTF-8.")
 @click.pass_context
-def generate(ctx: click.Context, file: Path, imdb: str, tmdb: str, tvdb: int, **__) -> None:
+def generate(
+    ctx: click.Context, file: Path, imdb: Optional[str], tmdb: Optional[str], tvdb: Optional[int], **__
+) -> None:
     """
     Generates an NFO for the provided file.
 
@@ -75,10 +77,8 @@ def generate(ctx: click.Context, file: Path, imdb: str, tmdb: str, tvdb: int, **
 
     media_info = MediaInfo.parse(file)
 
-    if imdb == "-":
+    if not imdb:
         imdb = media_info.general_tracks[0].to_data().get("imdb")
-        if not imdb:
-            raise ValueError("No IMDb ID was found within the file's metadata.")
         ctx.params["imdb"] = imdb
 
     if not tmdb:
@@ -88,6 +88,12 @@ def generate(ctx: click.Context, file: Path, imdb: str, tmdb: str, tvdb: int, **
     if not tvdb:
         tvdb = media_info.general_tracks[0].to_data().get("tvdb")
         ctx.params["tvdb"] = tvdb
+
+    if not imdb and not tmdb:
+        raise click.ClickException(
+            "At least an IMDb or TMDB ID must be provided. "
+            "TVDB's API is not free so it cannot be used by itself."
+        )
 
 
 @generate.result_callback()
