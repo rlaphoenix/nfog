@@ -9,7 +9,7 @@ from nfog.templates import Template
 
 class Movie(Template):
     """
-    Template for Movies.
+    [IMDb] NFO Template for Movies.
     The release name will be the provided file's name.
 
     Note:

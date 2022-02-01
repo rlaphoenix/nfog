@@ -9,7 +9,7 @@ from nfog.templates import Template
 
 class EpisodeBB(Template):
     """
-    BBCode Description Template for single TV Episode files.
+    [IMDb] BBCode Description Template for single TV Episode files.
     The release name will be the provided file's name.
 
     Note:

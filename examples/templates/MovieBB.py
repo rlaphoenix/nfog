@@ -9,7 +9,7 @@ from nfog.templates import Template
 
 class MovieBB(Template):
     """
-    BBCode Description Template for Movies.
+    [IMDb] BBCode Description Template for Movies.
     The release name will be the provided file's name.
 
     Note:

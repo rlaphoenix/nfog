@@ -9,7 +9,7 @@ from nfog.templates import Template
 
 class Season(Template):
     """
-    Template for full-Season packs.
+    [IMDb] NFO Template for full-Season packs.
     The release name will be the parent folder name of the provided file.
 
     Note:

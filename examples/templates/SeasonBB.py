@@ -9,7 +9,7 @@ from nfog.templates import Template
 
 class SeasonBB(Template):
     """
-    BBCode Description Template for full-Season packs.
+    [IMDb] BBCode Description Template for full-Season packs.
     The release name will be the parent folder name of the provided file.
 
     Note:
