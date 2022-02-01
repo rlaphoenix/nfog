@@ -49,7 +49,13 @@ def version() -> None:
     )
 
 
-@cli.group(cls=TemplateGroup, context_settings=dict(**GROUP_SETTINGS, ignore_unknown_options=True))
+@cli.group(
+    cls=TemplateGroup,
+    context_settings=dict(
+        **GROUP_SETTINGS,
+        ignore_unknown_options=True,
+        default_map=config.get("cli").get("generate", {})
+    ))
 @click.argument("file", type=Path)
 @click.option("-imdb", type=str, default=None, help="IMDb ID (including 'tt').")
 @click.option("-tmdb", type=str, default=None, help="TMDB ID (including 'tv/' or 'movie/').")
