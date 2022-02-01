@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import pymediainfo
-from langcodes import Language, LanguageTagError
+from langcodes import Language
 
 
 class BaseTrack:
@@ -86,16 +86,11 @@ class BaseTrack:
             return None
 
         try:
+            # checks by name only, instead of tag as tag can be triggered in non-tag
+            # cases, like `SDH` as title, which is detected as Southern Kurdish
             if Language.find(title) != Language.get("und"):
                 return None
         except LookupError:
-            pass
-
-        try:
-            lang = Language.get(title)
-            if lang.is_valid() and lang != Language.get("und"):
-                return None
-        except LanguageTagError:
             pass
 
         if any(str(x).lower() in title.lower() for x in (
