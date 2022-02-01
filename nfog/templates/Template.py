@@ -145,7 +145,7 @@ class Template:
         if not tvdb_id:
             return None
 
-        api_key = config.get("fanart_api_key")
+        api_key = config.get("api-keys").get("fanart-tv")
         if not api_key:
             print("Warning: No fanart.tv api key in config, skipping banner image.")
             return None
