@@ -147,7 +147,8 @@ class Template:
 
         api_key = config.get("fanart_api_key")
         if not api_key:
-            raise ValueError("No Fanart.tv api key is set in config, cannot get banner image.")
+            print("Warning: No fanart.tv api key in config, skipping banner image.")
+            return None
 
         r = self.session.get(f"http://webservice.fanart.tv/v3/tv/{tvdb_id}?api_key={api_key}")
         if r.status_code == 404:
