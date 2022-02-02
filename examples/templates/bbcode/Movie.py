@@ -7,32 +7,26 @@ import click
 from nfog.templates import Template
 
 
-class SeasonBB(Template):
+class Movie(Template):
     """
-    [IMDb] BBCode Description Template for full-Season packs.
-    The release name will be the parent folder name of the provided file.
+    [IMDb] BBCode Description Template for Movies.
+    The release name will be the provided file's name.
 
     Note:
-    - This uses IMDb for Title information which might not match packs organized
-      specifically for TMDB or TVDB.
-    - IMDb commonly has multi-segment episodes as one episode, e.g. S01E01E02 as just
-      one episode, unlike what is typically done on TMDB and TVDB.
+    - This uses IMDb for Title information which might not match TMDB.
     """
 
     @staticmethod
-    @click.command(name="SeasonBB")
-    @click.argument("season", type=int)
+    @click.command(name="Movie")
     @click.pass_context
     def cli(ctx: click.Context, **kwargs: Any) -> Template:
-        return SeasonBB(**ctx.parent.params, **kwargs)
+        return Movie(**ctx.parent.params, **kwargs)
 
     @property
     def nfo(self) -> str:
         """Generate the NFO string using Template information."""
         if self._nfo:
             return self._nfo
-
-        season: int = self.args["season"]
 
         if self.tvdb:
             banner = self.get_banner_image(self.tvdb, self.primary_lang)
@@ -45,8 +39,7 @@ class SeasonBB(Template):
 
         title = self.imdb["title"]
         type_ = self.imdb["kind"].title().replace("Tv", "TV")
-        year = self.imdb["series years"]
-        episodes = self.imdb["episodes"][season]
+        year = self.imdb["year"]
         has_chapters = ["No", "Yes"][bool(self.chapters)]
 
         self._nfo = ["[align=center]"]
@@ -73,12 +66,11 @@ class SeasonBB(Template):
             f"Release: {self.release_name}",
             f"Title: {title}",
             f"Type: {type_} ({year})",
-            f"Season: {season} ({len(episodes)} Episodes)",
             f"IMDb: https://imdb.com/title/tt{self.imdb.movieID}"
         ])
 
         if self.tmdb:
-            self._nfo.append(f"TMDB: https://themoviedb.org/tv/{self.tmdb.id}")
+            self._nfo.append(f"TMDB: https://themoviedb.org/movie/{self.tmdb.id}")
 
         if self.tvdb:
             self._nfo.append(f"TVDB: https://thetvdb.com/?tab=series&id={self.tvdb}")
@@ -130,6 +122,15 @@ class SeasonBB(Template):
                 self._nfo.append(self.indented_wrap(self.get_subtitle_summary(text), 66, "  "))
         else:
             self._nfo.append("  --")
+
+        self._nfo.extend([
+            "",
+            f"──┤    Chapters    ├──────────────────────────────────────────[ {len(self.chapters):0>2} ]──",
+            ""
+        ])
+
+        for line in self.get_chapter_list(self.chapters) or ["--"]:
+            self._nfo.append(self.indented_wrap(line, 66, "  "))
 
         self._nfo = "\n".join(self._nfo)
         return self._nfo

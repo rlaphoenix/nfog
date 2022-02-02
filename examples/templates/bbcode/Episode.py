@@ -7,26 +7,34 @@ import click
 from nfog.templates import Template
 
 
-class MovieBB(Template):
+class Episode(Template):
     """
-    [IMDb] BBCode Description Template for Movies.
+    [IMDb] BBCode Description Template for single TV Episode files.
     The release name will be the provided file's name.
 
     Note:
-    - This uses IMDb for Title information which might not match TMDB.
+    - This uses IMDb for Title information which might not match TMDB or TVDB.
+    - IMDb commonly has multi-segment episodes as one episode, e.g. S01E01E02 as just
+      one episode, unlike what is typically done on TMDB and TVDB.
     """
 
     @staticmethod
-    @click.command(name="MovieBB")
+    @click.command(name="Episode")
+    @click.argument("season", type=int)
+    @click.argument("episode", type=int)
     @click.pass_context
     def cli(ctx: click.Context, **kwargs: Any) -> Template:
-        return MovieBB(**ctx.parent.params, **kwargs)
+        return Episode(**ctx.parent.params, **kwargs)
 
     @property
     def nfo(self) -> str:
         """Generate the NFO string using Template information."""
         if self._nfo:
             return self._nfo
+
+        season: int = self.args["season"]
+        episode: int = self.args["episode"]
+        episode_name: str = self.imdb["episodes"][season][episode]["title"]
 
         if self.tvdb:
             banner = self.get_banner_image(self.tvdb, self.primary_lang)
@@ -39,7 +47,7 @@ class MovieBB(Template):
 
         title = self.imdb["title"]
         type_ = self.imdb["kind"].title().replace("Tv", "TV")
-        year = self.imdb["year"]
+        year = self.imdb["series years"]
         has_chapters = ["No", "Yes"][bool(self.chapters)]
 
         self._nfo = ["[align=center]"]
@@ -66,11 +74,12 @@ class MovieBB(Template):
             f"Release: {self.release_name}",
             f"Title: {title}",
             f"Type: {type_} ({year})",
+            f"Episode: {season}x{episode} \"{episode_name}\"",
             f"IMDb: https://imdb.com/title/tt{self.imdb.movieID}"
         ])
 
         if self.tmdb:
-            self._nfo.append(f"TMDB: https://themoviedb.org/movie/{self.tmdb.id}")
+            self._nfo.append(f"TMDB: https://themoviedb.org/tv/{self.tmdb.id}")
 
         if self.tvdb:
             self._nfo.append(f"TVDB: https://thetvdb.com/?tab=series&id={self.tvdb}")
