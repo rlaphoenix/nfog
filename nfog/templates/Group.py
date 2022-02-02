@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Optional
 
 import click
@@ -13,9 +14,10 @@ class TemplateGroup(click.MultiCommand):
         """Returns a list of template names from the template filenames."""
         rv = []
         if self.TEMPLATES_DIR.is_dir():
-            for cmd in self.TEMPLATES_DIR.iterdir():
-                if cmd.stem.lower() not in ("__init__", "group") and cmd.suffix.lower() == ".py":
-                    rv.append(cmd.stem)
+            for cmd in self.TEMPLATES_DIR.rglob("**/*.py"):
+                cmd = cmd.relative_to(self.TEMPLATES_DIR)
+                if cmd.stem.lower() not in ("__init__", "group"):
+                    rv.append(str(cmd.with_suffix("")).replace("\\", "/"))
         if not rv:
             raise click.ClickException(f"No Templates were found in {Directories.templates}")
         rv.sort()
@@ -24,7 +26,9 @@ class TemplateGroup(click.MultiCommand):
     def get_command(self, ctx: click.Context, name: str) -> Optional[click.Command]:
         """Load the template code and return the main click command function."""
         scope: dict[str, Any] = {}
-        fn = self.TEMPLATES_DIR / f"{name}.py"
+        name_split = name.split("/")
+        name = name_split[-1]
+        fn = Path(self.TEMPLATES_DIR, *name_split).with_suffix(".py")
         if not fn.exists():
             raise click.ClickException(f"The Template ({name}) was not found in {Directories.templates}.")
         with fn.open(encoding="utf8") as f:
