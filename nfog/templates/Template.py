@@ -270,7 +270,7 @@ class Template:
         if wrap_width and wrap_width < width:
             raise ValueError(f"Wrap width [{wrap_width}] cannot be less than centering width [{width}].")
         return "\n".join([
-            x.center(width)
+            x.center(width).rstrip()
             for x in textwrap.wrap(text, wrap_width or width)
         ])
 
