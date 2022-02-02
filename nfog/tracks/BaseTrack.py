@@ -55,63 +55,8 @@ class BaseTrack:
 
     @property
     def title(self) -> Optional[str]:
-        """
-        Get track title in it's simplest form.
-
-        Returns None if title contains the Language, Codec, or Encoding Library.
-        The track title should only be used for extra flag information, or as an
-        actual track name.
-
-        Examples:
-
-        | Language | Track Title                   | Output                        |
-        | -------- | ----------------------------- | ----------------------------- |
-        | es       |                               |                               |
-        | es       | Spanish                       |                               |
-        | es       | Spanish (Latin American, SDH) |                               | ! info loss
-        | es       |  (Latin American, SDH)        | (Latin American, SDH)         |
-        | es       | Latin American (SDH)          | Latin American (SDH)          |
-        | es       | Commentary by John & Jane Doe | Commentary by John & Jane Doe |
-        | es       | AC-3                          |                               |
-        | es       | DD                            |                               |
-        | es       | AC3 2.0                       |                               |
-        | es       | 2.0                           | 2.0 (too probable to happen)  |
-        | es       | Stereo                        |                               |
-        | es       | H.264                         |                               |
-        | es       | H264                          |                               |
-        | es       | x264                          |                               |
-        """
-        title = (self._x.title or "").strip()
-        if not title:
-            return None
-
-        try:
-            # checks by name only, instead of tag as tag can be triggered in non-tag
-            # cases, like `SDH` as title, which is detected as Southern Kurdish
-            if Language.find(title) != Language.get("und"):
-                return None
-        except LookupError:
-            pass
-
-        if any(str(x).lower() in title.lower() for x in (
-            # Codec (e.g. E-AC-3, EAC3, H.264, H264, VC-1, VC1)
-            self._x.format,
-            self.ALPHA_NUMERIC_RE.sub("", self._x.format),
-            # Simplified Codec (e.g., DD, DD+, DDP)
-            self.codec,
-            self.ALPHA_NUMERIC_RE.sub("", self.codec.replace("+", "P")),
-            # Encoding library (if available)
-            (self._x.writing_library or "").split(" ")[0],
-            # Channel layout as generic name
-            # Float representation not checked as too probable
-            "Mono",
-            "Stereo",
-            "Surround",
-            "Atmos"
-        ) if x):
-            return None
-
-        return title
+        """Get track title in it's simplest form."""
+        return (self._x.title or "").strip() or None
 
 
 __ALL__ = (BaseTrack,)
