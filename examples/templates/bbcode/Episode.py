@@ -61,14 +61,6 @@ class Episode(Template):
         self._nfo.append(self.layout(preview_images, width=2))
         self._nfo.append("[/align]")
 
-        if self.note:
-            self._nfo.extend([
-                "",
-                "[note]",
-                self.indented_wrap(self.note, 68),
-                "[/note]"
-            ])
-
         self._nfo.extend([
             "",
             f"Release: {self.release_name}",
@@ -89,6 +81,12 @@ class Episode(Template):
             f"Chapters: {has_chapters}",
             f"Source: {self.source}"
         ])
+
+        if self.note:
+            self._nfo.extend([
+                "",
+                f"[note]{self.indented_wrap(self.note, 70)}[/note]"
+            ])
 
         self._nfo.extend([
             "",
