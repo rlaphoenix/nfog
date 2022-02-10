@@ -62,23 +62,23 @@ class Season(Template):
 
         self._nfo.extend([
             "",
-            f"Release: {self.release_name}",
-            f"Title: {title}",
-            f"Type: {type_} ({year})",
-            f"Season: {season} ({len(episodes)} Episodes)",
-            f"IMDb: https://imdb.com/title/tt{self.imdb.movieID}"
+            f"Release  : {self.release_name}",
+            f"Title    : {title}",
+            f"Type     : {type_} ({year})",
+            f"Season   : {season} ({len(episodes)} Episodes)",
+            f"IMDb     : https://imdb.com/title/tt{self.imdb.movieID}"
         ])
 
         if self.tmdb:
-            self._nfo.append(f"TMDB: https://themoviedb.org/tv/{self.tmdb.id}")
+            self._nfo.append(f"TMDB     : https://themoviedb.org/tv/{self.tmdb.id}")
 
         if self.tvdb:
-            self._nfo.append(f"TVDB: https://thetvdb.com/?tab=series&id={self.tvdb}")
+            self._nfo.append(f"TVDB     : https://thetvdb.com/?tab=series&id={self.tvdb}")
 
         self._nfo.extend([
-            f"Preview: {self.preview}",
-            f"Chapters: {has_chapters}",
-            f"Source: {self.source}"
+            f"Preview  : {self.preview}",
+            f"Chapters : {has_chapters}",
+            f"Source   : {self.source}"
         ])
 
         if self.note:
