@@ -136,7 +136,7 @@ class Movie(Template):
     @property
     def release_name(self) -> str:
         """The release name used for the output NFO filename."""
-        return self.file.parent.name
+        return self.file.stem
 
     @property
     def file_ext(self) -> str:
