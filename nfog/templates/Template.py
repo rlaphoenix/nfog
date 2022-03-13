@@ -42,7 +42,10 @@ class Template:
                 raise ValueError(
                     f"The provided IMDb ID ({imdb}) is not valid. Expected e.g., 'tt0487831', 'tt10810424'."
                 )
-            self.imdb = IMDb().get_movie(imdb.lstrip("tt"), ("main", "episodes"))
+
+            self.imdb = IMDb().get_movie(imdb.lstrip("tt"))
+            if "movie" not in self.imdb["kind"]:
+                IMDb().update(self.imdb, ("episodes",))
         else:
             self.imdb = None
 
