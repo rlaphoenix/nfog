@@ -123,7 +123,7 @@ class Movie(Template):
 
         self._nfo.extend([
             "",
-            f"──┤    Chapters    ├──────────────────────────────────────────[ {len(self.chapters):0>2} ]──",
+            f"──┤    Chapters    ├──────────────────────────────────────────[ {len(self.chapters or []):0>2} ]──",
             ""
         ])
 
