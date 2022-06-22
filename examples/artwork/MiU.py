@@ -1,4 +1,3 @@
-import textwrap
 from datetime import datetime
 
 from nfog.artwork import Artwork
@@ -8,11 +7,6 @@ from nfog.templates import Template
 class MiU(Artwork):
     @staticmethod
     def with_template(template: Template) -> str:
-        rls_name = textwrap.wrap(template.release_name, 50)
-        rls_name = [
-            rls_name[0] if len(rls_name) > 1 else '    °。  .                  .+',
-            rls_name[len(rls_name) - 1]
-        ]
         now = datetime.now().strftime("%Y.%m.%d %H:%M")
         nfo = template.nfo.splitlines(keepends=False)
         is_nfo = template.file_ext == ".nfo"
@@ -20,11 +14,11 @@ class MiU(Artwork):
         art = [
             "。                  *              °               °。               +  ",
             "   *     °。       ⢀⡴⠞⢳                                                ",
-            "      .          ⡔⠋ ⢰⠎    ..     MiU PROUDLY PRESENTS      °。         ",
+            "      .          ⡔⠋ ⢰⠎    ..      °。         +                *       ",
             "   °。    .。    ⣼⢆⣤⡞⠃                                  。               ",
-           f"        *       ⣼⢠⠋⠁ {rls_name[0]}",  # noqa: E131
-           f"   。  ⢀⣀⣾⢳    ⢸⢠⠃  {rls_name[1]}",
-            "  ⣀⡤⠴⠊⠉  ⠈⠳⡀  ⠘⢎⠢⣀⣀⣀       .                                          ",
+            "        *       ⣼⢠⠋⠁     °。     MiU PROUDLY PRESENTS             °    ",
+            "   。  ⢀⣀⣾⢳    ⢸⢠⠃      .                                 +            ",
+            "  ⣀⡤⠴⠊⠉  ⠈⠳⡀  ⠘⢎⠢⣀⣀⣀       .                °                         ",
             "  ⠳⣄  ⡠⡤⡀ ⠘⣇⡀   ⠉⠓⠒⠺⠭⢵⣦⡀     *      °。                    °           ",
             "   ⢹⡆ ⢷⡇⠁  ⣸⠇  。  ⢠⢤  ⠘⢷⣆⡀                    *    .           *      ",
             "    ⠘⠒⢤⡄⠖⢾⣭⣤⣄ ⡔⢢ ⡀⠎⣸    ⠹⣿⡀  GREETS:                    *             ",
