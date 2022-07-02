@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from nfog.artwork import Artwork
@@ -60,7 +61,10 @@ class MiU(Artwork):
             nfo = [
                 "[align=center]",
                 *[
-                    x.ljust(max(70, [70, release_name_width][" : " in x]), " ")
+                    [
+                        x.ljust(max(70, [70, release_name_width][" : " in x]), " "),
+                        x  # no need to pad if empty, full of spaces, or ends with a bbcode tag
+                    ][not x or x.count(" ") == len(x) or re.search(r"\[/?\w+?(?:=\w+)?]$", x) is not None]
                     for x in (
                         *art,
                         "",
