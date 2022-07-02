@@ -29,10 +29,14 @@ class MiU(Artwork):
             "     。    °。  ⠈⠙⠫⠿⠿⠿⠛⠋⠁   .+     °               .                    "
         ]
 
-        footer = [
-            "{ MiU x nfog }".center(70),
-            now.center(70)
-        ]
+        footer = (
+            # we have to use .center() here, as I actually want it centered
+            x.center(70)
+            for x in (
+                "{ MiU x nfog }",
+                now
+            )
+        )
 
         release_name_width = len("Release  : ") + len(template.release_name)
 
