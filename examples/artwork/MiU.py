@@ -34,11 +34,13 @@ class MiU(Artwork):
             now.center(70)
         ]
 
+        release_name_width = len("Release  : ") + len(template.release_name)
+
         if not is_nfo:
             nfo = [
                 "[align=center]",
                 *[
-                    x.ljust(70, " ")
+                    x.ljust(max(70, [70, release_name_width][" : " in x]), " ")
                     for x in (
                         *art,
                         "",
