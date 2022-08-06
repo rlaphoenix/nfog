@@ -54,7 +54,7 @@ def version() -> None:
     context_settings=dict(
         **GROUP_SETTINGS,
         ignore_unknown_options=True,
-        default_map=config.get("cli").get("generate", {})
+        default_map=config.get("cli", {}).get("generate", {})
     ))
 @click.argument("file", type=Path)
 @click.option("-imdb", type=str, default=None, help="IMDb ID (including 'tt').")

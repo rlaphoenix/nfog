@@ -22,6 +22,6 @@ if Files.config.exists():
 else:
     config = {}
 
-tmdbsimple.API_KEY = config.get("api-keys").get("tmdb")
+tmdbsimple.API_KEY = config.get("api-keys", {}).get("tmdb")
 
 __ALL__ = (config, Directories, Files)
