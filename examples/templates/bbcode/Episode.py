@@ -34,7 +34,7 @@ class Episode(Template):
 
         season: int = self.args["season"]
         episode: int = self.args["episode"]
-        episode_name: str = self.imdb["episodes"][season][episode]["title"]
+        episode_name: str = self.imdb["episodes"][season][episode]["titleText"]
 
         if self.tvdb:
             banner = self.get_banner_image(self.tvdb, self.primary_lang)

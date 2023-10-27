@@ -8,12 +8,13 @@ from typing import Any, Optional
 from urllib.parse import urlparse
 
 import tmdbsimple
-from imdb import IMDb
+from imdb import Cinemagoer
 from langcodes import closest_supported_match
 from pymediainfo import MediaInfo, Track
 from requests import Session
 
 from nfog.config import config
+from nfog.parsers.imdb import IMDb
 from nfog.tracks import Audio, Subtitle, Video
 
 
@@ -43,9 +44,15 @@ class Template:
                     f"The provided IMDb ID ({imdb}) is not valid. Expected e.g., 'tt0487831', 'tt10810424'."
                 )
 
-            self.imdb = IMDb().get_movie(imdb.lstrip("tt"))
+            self._cinemagoer = Cinemagoer()
+            self.imdb = self._cinemagoer.get_movie(imdb.lstrip("tt"))
             if "movie" not in self.imdb["kind"]:
-                IMDb().update(self.imdb, ("episodes",))
+                # broken, very manual fix below
+                # self._cinemagoer.update(self.imdb, ("episodes",))
+                imdb_object = IMDb(imdb.lstrip("tt"))
+                self.imdb["episodes"] = {}
+                for season in range(1, self.imdb["seasons"] + 1):
+                    self.imdb["episodes"][season] = imdb_object.get_episodes(int(season))
         else:
             self.imdb = None
 

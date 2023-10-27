@@ -34,7 +34,7 @@ class Episode(Template):
 
         season: int = self.args["season"]
         episode: int = self.args["episode"]
-        episode_name: str = self.imdb["episodes"][season][episode]["title"]
+        episode_name: str = self.imdb["episodes"][season][episode]["titleText"]
 
         title = self.imdb["title"]
         type_ = self.imdb["kind"].title().replace("Tv", "TV")
